@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Pretendard', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+  }
+
+  /* Tabular numbers for clean numeric vertical alignment */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
