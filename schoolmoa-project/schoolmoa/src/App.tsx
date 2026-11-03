@@ -15,6 +15,7 @@ import { NoticeCard } from '@/features/notices/components/NoticeCard';
 import { NoticeDetailModal } from '@/features/notices/components/NoticeDetailModal';
 import { NoticeFilters } from '@/features/notices/components/NoticeFilters';
 import { NoticeTableRow } from '@/features/notices/components/NoticeTableRow';
+import { SiteDirectory } from '@/features/notices/components/SiteDirectory';
 import { useNoticeFilters } from '@/features/notices/hooks/useNoticeFilters';
 import { useNotices } from '@/features/notices/hooks/useNotices';
 import type { NoticeItem, TabKey, ViewMode } from '@/types';
@@ -159,6 +160,9 @@ export default function App() {
             )}
           </div>
         )}
+
+        {/* 사이트 모음: 외부 사이트 소개·링크 카드 */}
+        {currentTab === 'sites' && <SiteDirectory />}
 
         {/* 탭 2: 캘린더 (로그인 시 기본으로 내 보관함 공고만 표시) */}
         {currentTab === 'calendar' && (
