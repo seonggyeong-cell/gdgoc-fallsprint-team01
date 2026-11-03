@@ -1,6 +1,6 @@
 // [공유] 프로젝트 전역 상수·설정 — 변수는 가능한 한 여기에 모읍니다. 수정 시 팀 전원 confirm 필요
 import type {
-  ApplicationStage, CareerField, FilterState, NoticeCategory, NoticeSource, SortKey, StatusFilter, TabKey,
+  ApplicationStage, CareerField, FilterState, NoticeCategory, NoticeSource, SiteGroup, SortKey, StatusFilter, TabKey,
 } from '@/types';
 
 // ───────── 앱 기본 정보 ─────────
@@ -64,6 +64,15 @@ export const SOURCES: Record<NoticeSource, { label: string; url: string }> = {
   user: { label: '학생 제보', url: '' },
 };
 
+// ───────── 사이트 모음 (외부 사이트 소개·링크 카드, 데이터는 data/sites.ts) ─────────
+export const SITE_GROUPS: { key: SiteGroup; label: string }[] = [
+  { key: 'gov_training', label: '국비지원 학습' },
+  { key: 'paid_course', label: '유료 강의' },
+  { key: 'free_study', label: '무료 학습' },
+  { key: 'career', label: '인턴십·취업' },
+];
+export const SITE_GROUP_LABELS = Object.fromEntries(SITE_GROUPS.map((g) => [g.key, g.label])) as Record<SiteGroup, string>;
+
 // ───────── 희망 진로 / 학과 ─────────
 export const CAREER_FIELDS: { key: CareerField; label: string }[] = [
   { key: 'software', label: 'SW·개발' },
@@ -113,6 +122,7 @@ export const STAGES: { key: ApplicationStage; label: string; color: string }[] =
 // ───────── 상단 내비게이션 ─────────
 export const NAV_TABS: { key: TabKey; label: string; mobileLabel: string }[] = [
   { key: 'browse', label: '공고 둘러보기', mobileLabel: '공고 탐색' },
+  { key: 'sites', label: '사이트 모음', mobileLabel: '사이트' },
   { key: 'calendar', label: '캘린더 일정', mobileLabel: '캘린더' },
   { key: 'custom', label: '맞춤 추천', mobileLabel: '맞춤추천' },
   { key: 'bookmarks', label: '관심 보관함', mobileLabel: '보관함' },

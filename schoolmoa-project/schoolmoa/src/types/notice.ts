@@ -28,7 +28,7 @@ export interface NoticeItem {
 }
 
 // ---- UI 공통 ----
-export type TabKey = 'browse' | 'calendar' | 'custom' | 'bookmarks';
+export type TabKey = 'browse' | 'sites' | 'calendar' | 'custom' | 'bookmarks';
 export type ViewMode = 'grid' | 'table' | 'calendar';
 export type StatusFilter = 'all' | 'recruiting' | 'closing-soon' | 'ongoing';
 export type SortKey = 'deadline' | 'latest' | 'popular' | 'benefit';
