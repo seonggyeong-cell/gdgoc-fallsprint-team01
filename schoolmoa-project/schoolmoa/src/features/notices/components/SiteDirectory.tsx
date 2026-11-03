@@ -34,7 +34,7 @@ export const SiteDirectory: React.FC = () => {
     <div className="space-y-6">
       <div>
         <h2 className="text-xl font-bold text-neutral-900">사이트 모음</h2>
-        <p className="text-xs text-neutral-500 mt-0.5">국비지원 교육부터 인턴·취업까지, 학생에게 도움이 되는 사이트를 모았어요. '사이트 바로가기'를 누르면 새 탭으로 열려요.</p>
+        <p className="text-xs text-neutral-500 mt-0.5">국비지원 교육부터 인턴·취업까지 학생에게 도움이 되는 사이트를 모았습니다. '사이트 바로가기'를 누르면 새 탭에서 열립니다.</p>
       </div>
 
       <div className="space-y-3">
@@ -78,8 +78,8 @@ export const SiteDirectory: React.FC = () => {
       {filtered.length === 0 ? (
         <div className="bg-white rounded-xl border border-neutral-200 p-12 text-center text-neutral-500">
           <Search className="w-10 h-10 stroke-1 text-neutral-300 mx-auto mb-2" />
-          <h3 className="text-base font-semibold text-neutral-800">검색 결과가 없어요.</h3>
-          <p className="text-xs mt-1">다른 단어로 검색하거나 전체 탭에서 확인해 보세요.</p>
+          <h3 className="text-base font-semibold text-neutral-800">검색 결과가 없습니다.</h3>
+          <p className="text-xs mt-1">다른 검색어를 입력하거나 전체 탭에서 확인하세요.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
@@ -106,7 +106,7 @@ const SiteCard: React.FC<{ site: SiteLink }> = ({ site }) => (
           </div>
         </div>
         {site.hasApi && (
-          <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-medium shrink-0" title="공식 API가 있어 서버 연결 후 공고를 자동으로 가져올 수 있어요">
+          <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-medium shrink-0" title="공식 API가 있어 서버 연결 후 공고를 자동으로 가져올 수 있습니다">
             API 연동 예정
           </span>
         )}
