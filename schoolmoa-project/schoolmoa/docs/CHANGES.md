@@ -41,3 +41,12 @@
 - 샘플 공고를 실제 공고 URL로 교체 (역할 A) — 현재는 출처 사이트 메인으로 연결되는 **예시 데이터**
 - 인하대 공지 실제 수집: 브라우저 직접 호출은 CORS로 막히므로 서버(크롤러/프록시) 필요
 - 서버/DB 도입 시 로그인 토큰 검증, 보관함·프로필 서버 저장
+
+## 사이트 모음 탭 추가 (feature/site-api)
+- 상단 내비에 **사이트 모음** 탭 신설 → 팀이 고른 외부 사이트 14곳을 소개 + 링크 카드로 보여줌 (분류 탭 4개 + 검색)
+- 데이터: `src/data/sites.ts` (역할 A) — 사이트 추가·문구 수정은 이 파일만 고치면 됨
+- 화면: `src/features/notices/components/SiteDirectory.tsx` (역할 A)
+- 공유 파일 변경 (전원 confirm 필요): `types/site.ts` 신설, `types/notice.ts`의 `TabKey`에 `'sites'` 추가, `constants.ts`에 `SITE_GROUPS`·`SITE_GROUP_LABELS`·`NAV_TABS` 항목 추가
+- 역할 D 파일 변경: `App.tsx`(탭 화면 연결), `Header.tsx`(탭 아이콘)
+- 공식 API가 있는 5곳(KOTRA 채용·KOCW·K-MOOC·온통청년·원티드)은 카드에 "API 연동 예정" 표시 — 공고 자동 수집은 키를 서버에 숨겨야 해서 **서버·DB 도입 후** 진행 (브라우저에서 직접 호출하면 API 키가 노출되고 CORS로 막힘)
+- HRD-Net·청년일경험포털은 고용24 API가 기업회원(사업자등록번호) 전용이라 학생 개인은 키를 받을 수 없음 → 링크 카드로만 연결

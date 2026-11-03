@@ -1,6 +1,6 @@
 // [담당: 역할 D] 상단 헤더 (내비게이션 + 로그인/내 정보)
 import React from 'react';
-import { Bookmark, Calendar, PlusCircle, Sparkles } from 'lucide-react';
+import { Bookmark, Calendar, Globe, PlusCircle, Sparkles } from 'lucide-react';
 import { APP_NAME, NAV_TABS, SCHOOL_NAME } from '@/config/constants';
 import type { AuthUser, TabKey, UserProfile } from '@/types';
 
@@ -17,6 +17,7 @@ interface HeaderProps {
 }
 
 const TAB_ICONS: Partial<Record<TabKey, React.ReactNode>> = {
+  sites: <Globe className="w-4 h-4 text-neutral-500" />,
   calendar: <Calendar className="w-4 h-4 text-neutral-500" />,
   custom: <Sparkles className="w-4 h-4 text-indigo-500" />,
   bookmarks: <Bookmark className="w-4 h-4 text-neutral-500" />,
