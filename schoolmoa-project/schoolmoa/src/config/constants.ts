@@ -22,9 +22,11 @@ export const SHOW_DEMO_LOGIN = import.meta.env.DEV || (!ENV.googleClientId && !E
 // ───────── 날짜 ─────────
 export const CLOSING_SOON_DAYS = 7;
 export function getToday(): Date {
-  if (ENV.fixedToday) {
-    const [y, m, d] = ENV.fixedToday.split('-').map(Number);
-    return new Date(y, m - 1, d);
+  if (ENV.fixedToday && typeof ENV.fixedToday === 'string' && ENV.fixedToday.includes('-')) {
+    const parts = ENV.fixedToday.split('-').map(Number);
+    if (parts.length === 3 && !parts.some(isNaN)) {
+      return new Date(parts[0], parts[1] - 1, parts[2]);
+    }
   }
   const n = new Date();
   return new Date(n.getFullYear(), n.getMonth(), n.getDate());
