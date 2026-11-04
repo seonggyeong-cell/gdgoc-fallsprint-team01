@@ -19,7 +19,7 @@ export const SITE_LINKS: SiteLink[] = [
     tags: ['보안', '정보보호', '무료교육'],
   },
   {
-    id: 'ssafy', name: '삼성 청년 SW·AI 아카데미 SSAFY', org: '삼성', group: 'gov_training',
+    id: 'ssafy', name: '삼성 청년 SW·AI 아카데미 SSAFY', org: '삼성', group: 'free_study',
     url: 'https://www.ssafy.com',
     description: '삼성이 운영하는 청년 SW·AI 교육 프로그램입니다. 교육지원금을 받으며 실무 프로젝트 중심으로 학습합니다.',
     tags: ['SW개발', 'AI', '교육지원금'],

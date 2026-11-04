@@ -34,7 +34,7 @@ export default function App() {
   const auth = useAuth();
   const { user, profile, isLoggedIn, needsOnboarding, requireLogin, openLogin, logout, saveProfile } = auth;
 
-  const { notices, addNotice } = useNotices();
+  const { notices, addNotice } = useNotices(user?.id);
   const { bookmarkIds, records, isBookmarked, toggleBookmark, updateRecord } = useBookmarks(user?.id ?? null);
 
   const [currentTab, setCurrentTab] = useState<TabKey>('browse');

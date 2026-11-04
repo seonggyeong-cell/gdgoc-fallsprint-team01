@@ -75,6 +75,14 @@ const FALLBACK_NOTICES: InhaNoticeItem[] = [
   },
 ];
 
+/** 제목+링크 기반 결정론적 ID — 같은 공지는 항상 같은 id를 갖습니다 */
+function makeStableId(title: string, link?: string): string {
+  const src = (title + (link ?? '')).slice(0, 60);
+  let h = 0;
+  for (let i = 0; i < src.length; i++) h = (h * 31 + src.charCodeAt(i)) | 0;
+  return 'inha-' + Math.abs(h).toString(36);
+}
+
 function parseInhaNotices(html: string): InhaNoticeItem[] {
   const items: InhaNoticeItem[] = [];
   // 인하대 공지 게시판 HTML 패턴 매칭 (제목 및 게시글 ID/링크 추출)
@@ -99,7 +107,7 @@ function parseInhaNotices(html: string): InhaNoticeItem[] {
       const organizer = writerMatch ? writerMatch[1].trim() : '인하대';
 
       items.push({
-        id: `inha-${Date.now()}-${items.length}`,
+        id: makeStableId(title, officialUrl),
         title,
         category: 'academic',
         subcategory: '학사',

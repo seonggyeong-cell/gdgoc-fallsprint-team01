@@ -119,6 +119,7 @@ function loadScript(src: string): Promise<void> {
 export const isGoogleConfigured = () => !!ENV.googleClientId || (!!ENV.supabaseUrl && !!ENV.supabaseKey);
 export const isNaverConfigured = () => !!ENV.naverClientId;
 
+// ───────── 이메일 회원가입 (Supabase Auth 정식 연동) ─────────
 export async function registerWithEmail(name: string, email: string, password: string): Promise<AuthUser> {
   const cleanName = name.trim();
   const cleanEmail = email.trim().toLowerCase();
@@ -127,8 +128,35 @@ export async function registerWithEmail(name: string, email: string, password: s
   if (!cleanEmail.includes('@')) throw new Error('올바른 이메일 주소를 입력해 주세요.');
   if (password.length < 6) throw new Error('비밀번호는 최소 6자 이상이어야 합니다.');
 
-  const users = readJSON<RegisteredUser[]>(REGISTERED_USERS_KEY, []);
+  // Supabase가 연결되어 있으면 실제 Supabase Auth 서버로 회원가입
+  if (ENV.supabaseUrl && ENV.supabaseKey) {
+    const { data, error } = await supabase.auth.signUp({
+      email: cleanEmail,
+      password,
+      options: {
+        data: {
+          name: cleanName,
+          full_name: cleanName,
+        },
+      },
+    });
 
+    if (error) {
+      if (error.message.includes('User already registered')) {
+        throw new Error('이미 가입된 이메일입니다. 로그인 탭을 이용해 주세요.');
+      }
+      throw new Error(`회원가입 실패: ${error.message}`);
+    }
+
+    if (!data.user) {
+      throw new Error('회원가입에 실패했습니다.');
+    }
+
+    return toAuthUser(data.user);
+  }
+
+  // Supabase 미설정 로컬 개발 환경용 fallback
+  const users = readJSON<RegisteredUser[]>(REGISTERED_USERS_KEY, []);
   if (users.some((u) => u.email === cleanEmail)) {
     throw new Error('이미 가입된 이메일입니다. 로그인 탭을 이용해 주세요.');
   }
@@ -140,7 +168,6 @@ export async function registerWithEmail(name: string, email: string, password: s
     name: cleanName,
     passwordHash,
   };
-
   writeJSON(REGISTERED_USERS_KEY, [...users, newUser]);
 
   return {
@@ -151,12 +178,35 @@ export async function registerWithEmail(name: string, email: string, password: s
   };
 }
 
+// ───────── 이메일 로그인 (Supabase Auth 정식 연동) ─────────
 export async function loginWithEmail(email: string, password: string): Promise<AuthUser> {
   const cleanEmail = email.trim().toLowerCase();
   if (!cleanEmail || !password) {
     throw new Error('이메일과 비밀번호를 모두 입력해 주세요.');
   }
 
+  // Supabase가 연결되어 있으면 실제 Supabase Auth 서버로 로그인
+  if (ENV.supabaseUrl && ENV.supabaseKey) {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: cleanEmail,
+      password,
+    });
+
+    if (error) {
+      if (error.message.includes('Invalid login credentials')) {
+        throw new Error('이메일 또는 비밀번호가 일치하지 않습니다.');
+      }
+      throw new Error(`로그인 실패: ${error.message}`);
+    }
+
+    if (!data.user) {
+      throw new Error('로그인에 실패했습니다.');
+    }
+
+    return toAuthUser(data.user);
+  }
+
+  // Supabase 미설정 로컬 개발 환경용 fallback
   const users = readJSON<RegisteredUser[]>(REGISTERED_USERS_KEY, []);
   const found = users.find((u) => u.email === cleanEmail);
 

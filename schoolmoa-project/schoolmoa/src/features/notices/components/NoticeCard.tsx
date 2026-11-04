@@ -4,6 +4,7 @@ import { Bookmark, ChevronRight, ExternalLink, Sparkles } from 'lucide-react';
 import { CATEGORY_LABELS, SOURCES } from '@/config/constants';
 import type { NoticeItem } from '@/types';
 import { calculateDDay, formatDeadlineLabel } from '@/utils/dateUtils';
+import { sanitizeUrl } from '@/utils/urlUtils';
 
 interface NoticeCardProps {
   notice: NoticeItem;
@@ -25,15 +26,32 @@ export const NoticeCard: React.FC<NoticeCardProps> = ({ notice, isBookmarked, on
             <span aria-hidden="true" className="text-neutral-300">·</span>
             <span>{notice.subcategory}</span>
             <span aria-hidden="true" className="text-neutral-300">·</span>
-            <span className="truncate max-w-[140px]">{SOURCES[notice.source].label}</span>
+            <span className="text-neutral-600">{notice.organizer}</span>
+            {notice.source !== 'user' && (
+              <>
+                <span aria-hidden="true" className="text-neutral-300">·</span>
+                <span className="text-[11px] text-neutral-400">출처: {SOURCES[notice.source]?.label ?? notice.source}</span>
+              </>
+            )}
+            {notice.isUserSubmitted && (
+              <span className="text-[10px] bg-sky-50 text-sky-700 px-1.5 py-0.5 rounded font-medium border border-sky-200">제보</span>
+            )}
+            {reasons && reasons.length > 0 && (
+              <span className="inline-flex items-center gap-0.5 text-[10px] bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded font-medium border border-indigo-200">
+                <Sparkles className="w-2.5 h-2.5" /> 맞춤 추천
+              </span>
+            )}
           </div>
+
           <button
-            type="button"
-            onClick={(e) => { e.stopPropagation(); onToggleBookmark(notice.id); }}
-            className={`p-1.5 rounded-md transition-colors cursor-pointer shrink-0 ${
-              isBookmarked ? 'text-rose-600 bg-rose-50 hover:bg-rose-100' : 'text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100'
+            onClick={() => onToggleBookmark(notice.id)}
+            className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
+              isBookmarked
+                ? 'bg-amber-50 border-amber-200 text-amber-600'
+                : 'border-neutral-200 text-neutral-400 hover:text-neutral-700 hover:border-neutral-300'
             }`}
-            title={isBookmarked ? '관심 보관함에서 제거' : '관심 공고로 보관'}
+            title={isBookmarked ? '보관함에서 제거' : '보관함에 저장'}
+            aria-label={isBookmarked ? '보관함에서 제거' : '보관함에 저장'}
           >
             <Bookmark className="w-4 h-4" fill={isBookmarked ? 'currentColor' : 'none'} />
           </button>
@@ -41,18 +59,14 @@ export const NoticeCard: React.FC<NoticeCardProps> = ({ notice, isBookmarked, on
 
         <h3
           onClick={() => onSelectNotice(notice)}
-          className="text-base font-semibold text-neutral-900 group-hover:text-indigo-600 transition-colors leading-snug cursor-pointer mb-2 line-clamp-2"
-          style={{ textWrap: 'balance' }}
+          className="text-base font-bold text-neutral-900 group-hover:text-indigo-600 transition-colors cursor-pointer line-clamp-2 leading-snug mb-2"
         >
           {notice.title}
         </h3>
 
-        <p className="text-xs text-neutral-600 line-clamp-2 mb-3.5 leading-relaxed">{notice.summary}</p>
-
-        <div className="p-2.5 rounded-lg bg-neutral-50 border border-neutral-100 mb-3 text-xs flex items-center gap-1.5 font-medium text-neutral-900">
-          <Sparkles className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-          <span className="truncate">{notice.benefit}</span>
-        </div>
+        {notice.benefit && (
+          <p className="text-xs font-semibold text-indigo-700 mb-2">{notice.benefit}</p>
+        )}
 
         {reasons && reasons.length > 0 && (
           <p className="text-[11px] text-indigo-700 mb-2">추천 이유: {reasons.slice(0, 2).join(' · ')}</p>
@@ -69,7 +83,7 @@ export const NoticeCard: React.FC<NoticeCardProps> = ({ notice, isBookmarked, on
 
         <div className="flex items-center gap-1">
           <a
-            href={notice.officialUrl} target="_blank" rel="noreferrer noopener"
+            href={sanitizeUrl(notice.officialUrl)} target="_blank" rel="noreferrer noopener"
             className="inline-flex items-center gap-1 text-xs font-medium text-neutral-500 hover:text-indigo-600 py-1 px-2 rounded hover:bg-neutral-100 transition-colors"
             title="원문 사이트 열기"
           >

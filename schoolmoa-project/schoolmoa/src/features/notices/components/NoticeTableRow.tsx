@@ -4,6 +4,7 @@ import { Bookmark, ChevronRight, ExternalLink } from 'lucide-react';
 import { CATEGORY_LABELS, SOURCES } from '@/config/constants';
 import type { NoticeItem } from '@/types';
 import { calculateDDay, formatDeadlineLabel } from '@/utils/dateUtils';
+import { sanitizeUrl } from '@/utils/urlUtils';
 
 interface Props {
   notice: NoticeItem;
@@ -28,7 +29,7 @@ export const NoticeTableRow: React.FC<Props> = ({ notice, isBookmarked, onToggle
         <div className="text-xs text-neutral-500 mt-0.5 flex items-center gap-2">
           <span>{notice.organizer}</span>
           <span aria-hidden="true" className="text-neutral-300">·</span>
-          <span>{SOURCES[notice.source].label}</span>
+          <span>{SOURCES[notice.source]?.label ?? notice.source}</span>
         </div>
       </td>
 
@@ -50,7 +51,7 @@ export const NoticeTableRow: React.FC<Props> = ({ notice, isBookmarked, onToggle
           >
             <Bookmark className="w-4 h-4" fill={isBookmarked ? 'currentColor' : 'none'} />
           </button>
-          <a href={notice.officialUrl} target="_blank" rel="noreferrer noopener" className={iconBtn} title="원문 사이트 열기">
+          <a href={sanitizeUrl(notice.officialUrl)} target="_blank" rel="noreferrer noopener" className={iconBtn} title="원문 사이트 열기">
             <ExternalLink className="w-4 h-4" />
           </a>
           <button onClick={() => onSelectNotice(notice)} className={iconBtn} title="상세보기">
