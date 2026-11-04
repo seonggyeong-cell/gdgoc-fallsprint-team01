@@ -49,7 +49,7 @@ export function useNoticeFilters(notices: NoticeItem[], recommendedIds: Set<stri
       .sort((a, b) => {
         switch (filters.sortBy) {
           case 'latest':
-            return b.createdAt.localeCompare(a.createdAt);
+            return (b.createdAt ?? '').localeCompare(a.createdAt ?? '');
           case 'popular':
             return b.views + b.bookmarkedCount * 5 - (a.views + a.bookmarkedCount * 5);
           case 'benefit':
@@ -65,5 +65,12 @@ export function useNoticeFilters(notices: NoticeItem[], recommendedIds: Set<stri
       });
   }, [visible, filters, recommendedIds]);
 
-  return { filters, setFilters, resetFilters, filtered, categoryCounts, availableSubcategories };
+  return {
+    filters,
+    setFilters,
+    resetFilters,
+    filtered,
+    categoryCounts,
+    availableSubcategories,
+  };
 }

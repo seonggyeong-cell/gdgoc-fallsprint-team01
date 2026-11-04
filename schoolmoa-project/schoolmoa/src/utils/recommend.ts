@@ -47,5 +47,10 @@ export function recommendNotices(notices: NoticeItem[], profile: UserProfile | n
     result.push({ notice, score, reasons });
   }
 
-  return result.sort((a, b) => b.score - a.score || a.notice.deadline.localeCompare(b.notice.deadline));
+  return result.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    const dA = a.notice.deadline ?? '9999-12-31';
+    const dB = b.notice.deadline ?? '9999-12-31';
+    return dA.localeCompare(dB);
+  });
 }
