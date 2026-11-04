@@ -1,24 +1,18 @@
 import React, { useState } from 'react';
-import { X, ShieldCheck, Mail, Lock, User } from 'lucide-react';
+import { Lock, Mail, ShieldCheck, User, X } from 'lucide-react';
 import { APP_NAME, SHOW_DEMO_LOGIN } from '@/config/constants';
 import { useAuth } from './AuthContext';
 import { isGoogleConfigured, isNaverConfigured } from './authService';
 
 export const LoginModal: React.FC = () => {
   const { isLoginOpen, closeLogin, login, loginEmail, registerEmail, authError } = useAuth();
-
   const [mode, setMode] = useState<'login' | 'register'>('login');
-  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isLoginOpen) return null;
-
-  const btn =
-    'w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer';
-  const inputStyle =
-    'w-full pl-9 pr-3 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:bg-white';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,16 +28,18 @@ export const LoginModal: React.FC = () => {
     }
   };
 
-  const switchMode = (newMode: 'login' | 'register') => {
-    setMode(newMode);
-    setName('');
-    setEmail('');
-    setPassword('');
+  const switchMode = (m: 'login' | 'register') => {
+    setMode(m);
   };
+
+  const inputStyle =
+    'w-full pl-9 pr-3 py-2 text-xs border border-neutral-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder:text-neutral-400';
+  const btn =
+    'w-full py-2.5 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer';
 
   return (
     <div
-      className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6"
+      className="fixed inset-0 z-50 bg-neutral-900/40 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150"
       onClick={closeLogin}
     >
       <div
@@ -73,16 +69,18 @@ export const LoginModal: React.FC = () => {
             <button
               type="button"
               onClick={() => switchMode('login')}
-              className={`py-1.5 rounded-md transition-colors cursor-pointer ${mode === 'login' ? 'bg-white text-neutral-900 shadow-xs font-semibold' : 'text-neutral-500 hover:text-neutral-800'
-                }`}
+              className={`py-1.5 rounded-md transition-colors cursor-pointer ${
+                mode === 'login' ? 'bg-white text-neutral-900 shadow-xs font-semibold' : 'text-neutral-500 hover:text-neutral-800'
+              }`}
             >
               이메일 로그인
             </button>
             <button
               type="button"
               onClick={() => switchMode('register')}
-              className={`py-1.5 rounded-md transition-colors cursor-pointer ${mode === 'register' ? 'bg-white text-neutral-900 shadow-xs font-semibold' : 'text-neutral-500 hover:text-neutral-800'
-                }`}
+              className={`py-1.5 rounded-md transition-colors cursor-pointer ${
+                mode === 'register' ? 'bg-white text-neutral-900 shadow-xs font-semibold' : 'text-neutral-500 hover:text-neutral-800'
+              }`}
             >
               회원가입
             </button>
@@ -155,6 +153,13 @@ export const LoginModal: React.FC = () => {
               className={`${btn} bg-white border border-neutral-300 text-neutral-800 hover:bg-neutral-50 disabled:opacity-40 disabled:cursor-not-allowed`}
             >
               Google로 계속하기
+            </button>
+            <button
+              type="button"
+              onClick={() => login('kakao')}
+              className={`${btn} bg-[#FEE500] text-[#191919] hover:bg-[#fedb00]`}
+            >
+              카카오로 계속하기
             </button>
             <button
               type="button"

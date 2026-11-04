@@ -9,6 +9,8 @@ export const SCHOOL_NAME = '인하대학교';
 
 // ───────── 환경변수 (.env.local) ─────────
 export const ENV = {
+  supabaseUrl: import.meta.env.VITE_SUPABASE_URL as string | undefined,
+  supabaseKey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined,
   googleClientId: import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined,
   naverClientId: import.meta.env.VITE_NAVER_CLIENT_ID as string | undefined,
   naverCallbackUrl: (import.meta.env.VITE_NAVER_CALLBACK_URL as string | undefined) ?? window.location.origin + '/',

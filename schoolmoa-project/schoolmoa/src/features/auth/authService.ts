@@ -1,6 +1,8 @@
 import { ENV } from '@/config/constants';
 import { readJSON, writeJSON } from '@/services/storage';
-import type { AuthUser } from '@/types';
+import { supabase } from '@/services/supabase';
+import type { User } from '@supabase/supabase-js';
+import type { AuthProvider, AuthUser } from '@/types';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 declare global {
@@ -12,7 +14,6 @@ declare global {
 
 const GOOGLE_SDK = 'https://accounts.google.com/gsi/client';
 const NAVER_SDK = 'https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.2.js';
-
 const REGISTERED_USERS_KEY = 'schoolmoa:registered_users';
 
 interface RegisteredUser {
@@ -20,6 +21,58 @@ interface RegisteredUser {
   email: string;
   name: string;
   passwordHash: string;
+}
+
+// ───────── Supabase OAuth & 세션 헬퍼 (가이드 4-6) ─────────
+export async function loginWith(provider: 'google' | 'kakao' | 'custom:naver') {
+  if (ENV.supabaseUrl && ENV.supabaseKey) {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: provider as any,
+      options: { redirectTo: window.location.origin },
+    });
+    if (error) throw error;
+    return;
+  }
+  // Supabase 환경변수가 없는 경우 기존 OAuth 폴백
+  if (provider === 'google') {
+    return loginWithGoogle();
+  }
+  if (provider === 'custom:naver') {
+    return startNaverLogin();
+  }
+}
+
+export const logoutWithSupabase = async () => {
+  try {
+    await supabase.auth.signOut();
+  } catch (e) {
+    console.warn('Supabase signOut error', e);
+  }
+};
+
+export function toAuthUser(u: User): AuthUser {
+  const m = u.user_metadata ?? {};
+  return {
+    id: u.id, // Supabase uuid
+    provider: (u.app_metadata?.provider ?? 'google') as AuthProvider,
+    name: m.full_name ?? m.name ?? m.nickname ?? (u.is_anonymous ? '체험 사용자' : '사용자'),
+    email: u.email ?? undefined,
+    picture: m.avatar_url ?? m.picture ?? undefined,
+  };
+}
+
+export async function signInDemo(): Promise<AuthUser> {
+  if (ENV.supabaseUrl && ENV.supabaseKey) {
+    try {
+      const { data, error } = await supabase.auth.signInAnonymously();
+      if (!error && data.user) {
+        return toAuthUser(data.user);
+      }
+    } catch {
+      // Supabase anonymous sign-in 미설정 시 fallback
+    }
+  }
+  return createDemoUser();
 }
 
 async function hashPassword(password: string): Promise<string> {
@@ -42,7 +95,7 @@ function loadScript(src: string): Promise<void> {
   });
 }
 
-export const isGoogleConfigured = () => !!ENV.googleClientId;
+export const isGoogleConfigured = () => !!ENV.googleClientId || (!!ENV.supabaseUrl && !!ENV.supabaseKey);
 export const isNaverConfigured = () => !!ENV.naverClientId;
 
 export async function registerWithEmail(name: string, email: string, password: string): Promise<AuthUser> {
