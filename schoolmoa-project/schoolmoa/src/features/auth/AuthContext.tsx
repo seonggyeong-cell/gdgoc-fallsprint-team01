@@ -1,14 +1,19 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { STORAGE_KEYS } from '@/config/constants';
+import { ENV, STORAGE_KEYS } from '@/config/constants';
 import { readJSON, removeKey, writeJSON } from '@/services/storage';
+import { supabase } from '@/services/supabase';
 import type { AuthProvider, AuthUser, UserProfile } from '@/types';
 import {
   completeNaverLogin,
   createDemoUser,
+  loginWith,
   loginWithEmail,
   loginWithGoogle,
+  logoutWithSupabase,
   registerWithEmail,
+  signInDemo,
   startNaverLogin,
+  toAuthUser,
 } from './authService';
 
 const EMPTY_PROFILE: UserProfile = {
@@ -45,6 +50,30 @@ export const AuthProviderRoot: React.FC<{ children: React.ReactNode }> = ({ chil
   const [isLoginOpen, setLoginOpen] = useState(false);
   const [authError, setAuthError] = useState('');
 
+  // 1) Supabase 세션 구독 (가이드 9페이지)
+  useEffect(() => {
+    if (!ENV.supabaseUrl || !ENV.supabaseKey) return;
+
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) {
+        setUser(toAuthUser(data.session.user));
+      }
+    }).catch((e) => console.warn('Supabase getSession error', e));
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        setUser(toAuthUser(session.user));
+      } else {
+        // demo/로컬 유저가 아닌 경우만 null 처리
+        setUser((prev) => (prev?.provider === 'demo' ? prev : null));
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
   const completeLogin = useCallback((u: AuthUser) => {
     writeJSON(STORAGE_KEYS.authUser, u);
     setUser(u);
@@ -52,23 +81,77 @@ export const AuthProviderRoot: React.FC<{ children: React.ReactNode }> = ({ chil
     setAuthError('');
   }, []);
 
+  // 기존 네이버 팝업/리디렉트 처리
   useEffect(() => {
     completeNaverLogin()
       .then((u) => u && completeLogin(u))
       .catch((e) => setAuthError(e.message));
   }, [completeLogin]);
 
+  // 2) 프로필 불러오기 (Supabase profiles 테이블 우선, 실패 시 localStorage fallback)
   useEffect(() => {
-    setProfile(user ? readJSON<UserProfile>(STORAGE_KEYS.profile(user.id), EMPTY_PROFILE) : null);
+    if (!user) {
+      setProfile(null);
+      return;
+    }
+
+    let isCancelled = false;
+
+    async function loadProfile() {
+      if (ENV.supabaseUrl && ENV.supabaseKey) {
+        try {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user!.id)
+            .maybeSingle();
+
+          if (!error && data) {
+            if (!isCancelled) {
+              setProfile({
+                department: data.department ?? '',
+                careerFields: data.career_fields ?? [],
+                interestCategories: data.interest_categories ?? [],
+                onboarded: data.onboarded ?? false,
+              });
+              return;
+            }
+          }
+        } catch {
+          // ignore, fallback below
+        }
+      }
+
+      if (!isCancelled) {
+        setProfile(readJSON<UserProfile>(STORAGE_KEYS.profile(user!.id), EMPTY_PROFILE));
+      }
+    }
+
+    loadProfile();
+    return () => {
+      isCancelled = true;
+    };
   }, [user]);
 
   const login = useCallback(
     async (provider: AuthProvider) => {
       setAuthError('');
       try {
-        if (provider === 'google') completeLogin(await loginWithGoogle());
-        else if (provider === 'naver') await startNaverLogin();
-        else completeLogin(createDemoUser());
+        if (ENV.supabaseUrl && ENV.supabaseKey && (provider === 'google' || provider === 'kakao')) {
+          await loginWith(provider);
+          return;
+        }
+
+        if (provider === 'google') {
+          completeLogin(await loginWithGoogle());
+        } else if (provider === 'naver') {
+          await startNaverLogin();
+        } else if (provider === 'kakao') {
+          await loginWith('kakao');
+        } else {
+          const demo = await signInDemo();
+          completeLogin(demo);
+        }
       } catch (e) {
         setAuthError(e instanceof Error ? e.message : '로그인에 실패했습니다.');
       }
@@ -103,15 +186,33 @@ export const AuthProviderRoot: React.FC<{ children: React.ReactNode }> = ({ chil
   );
 
   const logout = useCallback(() => {
+    logoutWithSupabase();
     removeKey(STORAGE_KEYS.authUser);
     setUser(null);
   }, []);
 
   const saveProfile = useCallback(
-    (p: UserProfile) => {
+    async (p: UserProfile) => {
       if (!user) return;
+      // 로컬스토리지 우선 저장 (즉시 반영)
       writeJSON(STORAGE_KEYS.profile(user.id), p);
       setProfile(p);
+
+      // Supabase profiles 테이블 upsert (가이드 9페이지)
+      if (ENV.supabaseUrl && ENV.supabaseKey) {
+        try {
+          await supabase.from('profiles').upsert({
+            id: user.id,
+            department: p.department,
+            career_fields: p.careerFields,
+            interest_categories: p.interestCategories,
+            onboarded: p.onboarded,
+            updated_at: new Date().toISOString(),
+          });
+        } catch (e) {
+          console.warn('Supabase profile upsert error', e);
+        }
+      }
     },
     [user]
   );

@@ -1,10 +1,10 @@
 // [공유] 사용자/보관함 타입 — 수정 시 팀 전원 confirm 필요
 import type { CareerField, NoticeCategory } from './notice';
 
-export type AuthProvider = 'google' | 'naver' | 'demo';
+export type AuthProvider = 'google' | 'naver' | 'kakao' | 'demo';
 
 export interface AuthUser {
-  id: string; // 'google:xxxx' 형태 (provider 포함)
+  id: string; // Supabase uuid
   provider: AuthProvider;
   name: string;
   email?: string;
