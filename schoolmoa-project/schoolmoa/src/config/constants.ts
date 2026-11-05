@@ -98,6 +98,7 @@ export const DEPARTMENT_SUGGESTIONS = [
 
 // ───────── 필터 / 정렬 ─────────
 export const SORT_OPTIONS: { key: SortKey; label: string }[] = [
+  { key: 'recommended', label: '맞춤 추천순 (로그인·정보 입력 시)' },
   { key: 'deadline', label: '마감일 빠른순' },
   { key: 'latest', label: '최신 등록순' },
   { key: 'popular', label: '조회/인기순' },
@@ -111,7 +112,7 @@ export const STATUS_OPTIONS: { key: StatusFilter; label: string }[] = [
 ];
 export const DEFAULT_FILTERS: FilterState = {
   category: 'all', subcategory: 'all', source: 'all', status: 'all',
-  sortBy: 'deadline', searchQuery: '', onlyRecommended: false, includeClosed: false,
+  sortBy: 'recommended', searchQuery: '', onlyRecommended: false, includeClosed: false,
 };
 
 // ───────── 지원 진행 단계 (보관함) ─────────

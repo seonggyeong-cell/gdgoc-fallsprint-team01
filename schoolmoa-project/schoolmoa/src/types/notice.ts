@@ -31,7 +31,7 @@ export interface NoticeItem {
 export type TabKey = 'browse' | 'sites' | 'calendar' | 'custom' | 'bookmarks';
 export type ViewMode = 'grid' | 'table' | 'calendar';
 export type StatusFilter = 'all' | 'recruiting' | 'closing-soon' | 'ongoing';
-export type SortKey = 'deadline' | 'latest' | 'popular' | 'benefit';
+export type SortKey = 'recommended' | 'deadline' | 'latest' | 'popular' | 'benefit';
 
 export interface FilterState {
   category: NoticeCategory | 'all';

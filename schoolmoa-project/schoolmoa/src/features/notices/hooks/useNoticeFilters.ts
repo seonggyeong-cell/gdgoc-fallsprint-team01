@@ -4,8 +4,15 @@ import { DEFAULT_FILTERS } from '@/config/constants';
 import type { FilterState, NoticeItem } from '@/types';
 import { calculateDDay } from '@/utils/dateUtils';
 
-/** recommendedIds: 로그인 상태에서 '맞춤 추천만 보기'에 쓸 공고 id 집합 (비로그인이면 null) */
-export function useNoticeFilters(notices: NoticeItem[], recommendedIds: Set<string> | null) {
+/**
+ * recommendedIds: 로그인 상태에서 '맞춤 추천만 보기'에 쓸 공고 id 집합 (비로그인이면 null)
+ * scoreMap: 프로필 기반 추천 점수 맵 — 기본 정렬(마감일순)에서 같은 마감일 내 점수 높은 공고를 위로
+ */
+export function useNoticeFilters(
+  notices: NoticeItem[],
+  recommendedIds: Set<string> | null,
+  scoreMap?: Map<string, number>,
+) {
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
   const resetFilters = useCallback(() => setFilters(DEFAULT_FILTERS), []);
 
