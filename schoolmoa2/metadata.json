@@ -1,0 +1,8 @@
+{
+  "name": "스쿨모아-학교정보통합포털",
+  "description": "",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
