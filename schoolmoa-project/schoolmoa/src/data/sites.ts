@@ -1,77 +1,235 @@
-// [담당: 역할 A] 사이트 모음 데이터 — 팀이 체크한 외부 사이트 14곳의 소개·링크
-// 공식 API가 있는 곳은 hasApi: true (서버·DB 도입 후 공고 자동 수집 대상). 나머지는 링크 카드로만 연결합니다.
-// 모집 시기·참여 조건은 바뀔 수 있으니 발표 전에 각 사이트에서 한 번 확인하세요.
+// [담당: 역할 A] 사이트 모음 데이터 — 국비지원·강의·무료 학습·인턴/취업 사이트 46곳의 소개·링크
+// - url: 사이트 메인 / entries: 인턴 공고 목록·강의 목록 같은 '구체 화면'(첫 항목이 카드의 주 버튼) / searchUrl: 키워드 검색 주소({q})
+// - 공식 API가 있는 곳은 hasApi: true (서버·DB 도입 후 공고 자동 수집 대상)
+// ※ entries·searchUrl 주소는 사이트 개편으로 바뀔 수 있습니다. 발표 전에 한 번씩 눌러서 확인하고, 깨진 주소는 이 파일에서만 고치세요.
+//   (확인이 필요한 주소 목록: docs/SITE_LINKS_CHECK.md)
 import type { SiteLink } from '@/types';
 
 export const SITE_LINKS: SiteLink[] = [
-  // 1. 국비지원 학습
+  // ───────── 1. 국비지원 학습 ─────────
   {
-    id: 'hrd', name: '직업훈련포털 HRD-Net', org: '고용노동부·한국산업인력공단', group: 'gov_training',
+    id: 'work24', name: '고용24', org: '고용노동부', group: 'gov_training', cost: 'gov',
+    url: 'https://www.work24.go.kr',
+    description: '국민내일배움카드 발급, 훈련과정 검색·신청, 채용정보를 한곳에서 처리하는 고용노동부 통합 고용서비스입니다.',
+    tags: ['국비지원', '내일배움카드', '훈련과정', '채용정보'],
+    note: '워크넷·HRD-Net 기능이 고용24로 통합되어 안내되고 있습니다. 메뉴 위치는 개편될 수 있습니다.',
+    hasApi: true,
+  },
+  {
+    id: 'hrd', name: '직업훈련포털 HRD-Net', org: '고용노동부·한국산업인력공단', group: 'gov_training', cost: 'gov',
     url: 'https://www.hrd.go.kr',
     description: '국민내일배움카드로 수강할 수 있는 정부 지원 직업훈련 과정을 검색하고 신청합니다. 현재는 고용24로 통합되어 운영됩니다.',
     tags: ['국비지원', '내일배움카드', '직업훈련'],
     note: '과정 신청 전 국민내일배움카드 발급이 필요합니다.',
+    hasApi: true,
   },
   {
-    id: 'kisa-academy', name: 'KISA 아카데미', org: '한국인터넷진흥원', group: 'gov_training',
+    id: 'kisa-academy', name: 'KISA 아카데미', org: '한국인터넷진흥원', group: 'gov_training', cost: 'gov',
     url: 'https://academy.kisa.or.kr',
     description: '한국인터넷진흥원이 운영하는 정보보호·보안 교육 플랫폼입니다. 보안 분야 온라인·오프라인 교육을 제공합니다.',
     tags: ['보안', '정보보호', '무료교육'],
+    note: '과정마다 대상(재직자·학생 등)이 다르니 모집 중인 과정의 신청 자격을 확인하세요.',
   },
   {
-    id: 'ssafy', name: '삼성 청년 SW·AI 아카데미 SSAFY', org: '삼성', group: 'free_study',
-    url: 'https://www.ssafy.com',
-    description: '삼성이 운영하는 청년 SW·AI 교육 프로그램입니다. 교육지원금을 받으며 실무 프로젝트 중심으로 학습합니다.',
-    tags: ['SW개발', 'AI', '교육지원금'],
-    note: '모집은 연 몇 차례만 진행됩니다. 일정은 공식 사이트 공지를 확인하세요.',
-  },
-  {
-    id: 'codeit-sprint', name: '코드잇 스프린트', org: '코드잇', group: 'gov_training',
+    id: 'codeit-sprint', name: '코드잇 스프린트', org: '코드잇', group: 'gov_training', cost: 'gov',
     url: 'https://sprint.codeit.kr',
     description: '코드잇이 운영하는 K-디지털 트레이닝(KDT) 부트캠프입니다. 국민내일배움카드로 참여하는 국비지원 과정입니다.',
     tags: ['KDT', '부트캠프', '국비지원'],
   },
-
-  // 2. 강의를 구매해서 듣는 곳
   {
-    id: 'inflearn', name: '인프런', org: '인프랩', group: 'paid_course',
-    url: 'https://www.inflearn.com',
-    description: '개발·데이터·디자인 등 실무 강의를 구매해 수강하는 온라인 강의 플랫폼입니다. 무료 강의도 다수 있습니다.',
-    tags: ['개발', '데이터', '온라인강의'],
+    id: 'nbcamp', name: '내일배움캠프', org: '팀스파르타(스파르타코딩클럽)', group: 'gov_training', cost: 'gov',
+    url: 'https://nbcamp.spartacodingclub.kr',
+    description: '팀스파르타가 운영하는 K-디지털 트레이닝(KDT) 개발자 부트캠프입니다. 웹·백엔드·게임·AI 등 과정을 모집합니다.',
+    tags: ['KDT', '부트캠프', '국비지원', '개발자'],
+    note: '훈련장려금·지원 조건은 모집 공고마다 다릅니다. 공식 사이트에서 확인하세요.',
   },
   {
-    id: 'class101', name: '클래스101', org: '클래스101', group: 'paid_course',
+    id: 'devcourse', name: '프로그래머스 데브코스', org: '프로그래머스(그렙)', group: 'gov_training', cost: 'gov',
+    url: 'https://school.programmers.co.kr',
+    entries: [{ label: '프로그래머스 공식 홈페이지 (데브코스 모집 안내)', url: 'https://programmers.co.kr' }],
+    description: '그렙이 운영하는 K-디지털 트레이닝(KDT) 지원 개발자 부트캠프입니다. 직무별 과정을 기수 단위로 모집합니다.',
+    tags: ['KDT', '부트캠프', '개발자', '국비지원'],
+    note: '모집 안내는 프로그래머스 공식 홈페이지에 올라옵니다. 기수별 접수 기간이 짧으니 미리 확인하세요.',
+  },
+  {
+    id: 'likelion', name: '멋쟁이사자처럼 부트캠프', org: '멋쟁이사자처럼', group: 'gov_training', cost: 'gov',
+    url: 'https://bootcamp.likelion.net',
+    description: '멋쟁이사자처럼이 운영하는 개발·AI·PM 부트캠프입니다. 국민내일배움카드를 활용한 국비지원 과정이 있으며 인턴십 기회를 제공하는 과정도 있습니다.',
+    tags: ['부트캠프', '국비지원', '개발자', '인턴십'],
+    note: '과정별로 국비지원 여부와 자부담 비용이 다릅니다. 모집 공고를 확인하세요.',
+  },
+  {
+    id: 'sesac', name: '청년취업사관학교 SeSAC', org: '서울시', group: 'gov_training', cost: 'gov',
+    url: 'https://sesac.seoul.kr',
+    description: '서울시가 운영하는 청년 대상 IT·디지털 실무 교육 및 취업 연계 프로그램입니다.',
+    tags: ['서울시', '청년', 'IT교육', '취업연계'],
+    note: '캠퍼스·과정별로 참여 조건(나이·거주지 등)이 다릅니다.',
+  },
+  {
+    id: 'hrdkorea', name: '한국산업인력공단', org: 'HRD Korea', group: 'gov_training', cost: 'gov',
+    url: 'https://www.hrdkorea.or.kr',
+    description: '국가자격시험, 직업능력개발, 해외취업 지원 등을 담당하는 고용노동부 산하 공공기관입니다.',
+    tags: ['국가자격', '직업능력개발', '해외취업'],
+  },
+
+  // ───────── 2. 강의를 구매해서 듣는 곳 ─────────
+  {
+    id: 'inflearn', name: '인프런', org: '인프랩', group: 'paid_course', cost: 'mixed',
+    url: 'https://www.inflearn.com',
+    entries: [{ label: '전체 강의 목록 보기', url: 'https://www.inflearn.com/courses' }],
+    searchUrl: 'https://www.inflearn.com/courses?s={q}',
+    description: '개발·데이터·디자인 등 실무 강의를 구매해 수강하는 온라인 강의 플랫폼입니다. 무료 강의도 다수 있습니다.',
+    tags: ['개발', '데이터', '온라인강의'],
+    note: '강의마다 개별 주소(inflearn.com/course/…)가 있어, 키워드 검색으로 원하는 강의를 바로 찾을 수 있습니다.',
+  },
+  {
+    id: 'class101', name: '클래스101', org: '클래스101', group: 'paid_course', cost: 'paid',
     url: 'https://class101.net',
     description: '취미부터 커리어까지 다양한 온라인 클래스를 수강할 수 있는 플랫폼입니다.',
     tags: ['취미', '커리어', '온라인강의'],
   },
-
-  // 3. 국비지원이 아닌 무료 학습
   {
-    id: 'kmooc', name: 'K-MOOC', org: '국가평생교육진흥원', group: 'free_study',
+    id: 'fastcampus', name: '패스트캠퍼스', org: '패스트캠퍼스', group: 'paid_course', cost: 'paid',
+    url: 'https://fastcampus.co.kr',
+    description: 'IT·AI·데이터·금융 등 직무 중심 온라인 강의와 부트캠프를 제공하는 교육 플랫폼입니다.',
+    tags: ['직무교육', '온라인강의', '부트캠프'],
+  },
+  {
+    id: 'codeit', name: '코드잇', org: '코드잇', group: 'paid_course', cost: 'paid',
+    url: 'https://www.codeit.kr',
+    description: '코딩 입문자를 위한 온라인 코딩 강의 플랫폼입니다. 국비지원 부트캠프는 코드잇 스프린트를 확인하세요.',
+    tags: ['코딩입문', '온라인강의'],
+  },
+  {
+    id: 'nomadcoders', name: '노마드코더', org: '노마드코더', group: 'paid_course', cost: 'paid',
+    url: 'https://nomadcoders.co',
+    entries: [{ label: '강의 목록 보기', url: 'https://nomadcoders.co/courses' }],
+    description: '웹·앱 서비스를 직접 만들어 보며 배우는 실습 중심 개발 강의 플랫폼입니다.',
+    tags: ['웹개발', '실습', '온라인강의'],
+  },
+  {
+    id: 'udemy', name: '유데미', org: 'Udemy', group: 'paid_course', cost: 'mixed',
+    url: 'https://www.udemy.com',
+    searchUrl: 'https://www.udemy.com/courses/search/?q={q}',
+    description: '전 세계 강사의 다양한 분야 온라인 강의를 구매해 수강하는 글로벌 플랫폼입니다. 세일 기간에 할인 폭이 큽니다.',
+    tags: ['글로벌', '온라인강의', '할인'],
+  },
+  {
+    id: 'taling', name: '탈잉', org: '탈잉', group: 'paid_course', cost: 'paid',
+    url: 'https://taling.me',
+    description: '재능 공유 플랫폼으로, 개발·디자인·외국어 등 온·오프라인 클래스와 1:1 수업을 신청할 수 있습니다.',
+    tags: ['재능공유', '클래스', '1:1수업'],
+  },
+  {
+    id: 'goorm', name: '구름', org: 'goorm', group: 'paid_course', cost: 'mixed',
+    url: 'https://www.goorm.io',
+    description: '클라우드 개발 환경과 코딩 교육을 제공하는 플랫폼입니다. 교육·부트캠프 과정이 있습니다.',
+    tags: ['클라우드', '코딩교육', '부트캠프'],
+  },
+  {
+    id: 'coursera', name: '코세라', org: 'Coursera', group: 'paid_course', cost: 'mixed',
+    url: 'https://www.coursera.org',
+    searchUrl: 'https://www.coursera.org/search?query={q}',
+    description: '해외 유명 대학과 기업의 강의를 수강할 수 있는 플랫폼입니다. 일부 강의는 무료로 청강할 수 있습니다.',
+    tags: ['글로벌', '대학강의', '영어'],
+  },
+  {
+    id: 'edx', name: 'edX', org: 'edX', group: 'paid_course', cost: 'mixed',
+    url: 'https://www.edx.org',
+    searchUrl: 'https://www.edx.org/search?q={q}',
+    description: '해외 대학이 제공하는 온라인 강의와 인증 과정을 수강할 수 있는 플랫폼입니다.',
+    tags: ['글로벌', '대학강의', '영어'],
+  },
+
+  // ───────── 3. 국비지원이 아닌 무료 학습 ─────────
+  {
+    id: 'ssafy', name: '삼성 청년 SW·AI 아카데미 SSAFY', org: '삼성', group: 'free_study', cost: 'sponsored',
+    url: 'https://www.ssafy.com',
+    description: '삼성이 운영하는 청년 SW·AI 교육 프로그램입니다. 교육지원금을 받으며 실무 프로젝트 중심으로 학습합니다.',
+    tags: ['SW개발', 'AI', '교육지원금'],
+    note: '정부 국비가 아니라 기업이 지원하는 무료 과정입니다. 모집은 연 몇 차례만 진행되니 공식 사이트 공지를 확인하세요.',
+  },
+  {
+    id: 'woowacourse', name: '우아한테크코스', org: '우아한형제들', group: 'free_study', cost: 'sponsored',
+    url: 'https://techcourse.woowahan.com',
+    description: '우아한형제들이 운영하는 무료 개발자 교육 과정입니다. 장기간 풀타임으로 참여하는 실무형 프로그램입니다.',
+    tags: ['개발자', '무료교육', '풀타임'],
+    note: '모집은 보통 매년 가을(9월 말~10월 초)에 진행됩니다.',
+  },
+  {
+    id: 'boostcamp', name: '네이버 부스트캠프', org: '네이버 커넥트재단', group: 'free_study', cost: 'sponsored',
+    url: 'https://boostcamp.connect.or.kr',
+    description: '네이버 커넥트재단이 운영하는 개발자 성장 교육 프로그램입니다. 웹·모바일, AI 등 과정을 모집합니다.',
+    tags: ['개발자', '재단', '무료교육'],
+    note: '평일 풀타임 참여가 필요해 학기 중 재학생은 시간표 확인이 필요합니다.',
+  },
+  {
+    id: '42seoul', name: '42서울', org: '이노베이션 아카데미', group: 'free_study', cost: 'gov',
+    url: 'https://42seoul.kr',
+    entries: [{ label: '이노베이션 아카데미(운영기관) 사이트', url: 'https://www.innovationacademy.kr' }],
+    description: '교수·교재·학비 없이 동료 학습으로 진행하는 소프트웨어 교육 기관입니다. 서울시와 과기정통부가 설립에 참여했습니다.',
+    tags: ['SW교육', '동료학습', '무료'],
+    note: '선발 방식과 일정은 공식 사이트에서 확인하세요.',
+  },
+  {
+    id: 'kmooc', name: 'K-MOOC', org: '국가평생교육진흥원', group: 'free_study', cost: 'free',
     url: 'https://www.kmooc.kr',
     description: '대학 수준의 강좌를 누구나 무료로 수강하는 한국형 온라인 공개강좌입니다. 이수 기준을 충족하면 이수증이 발급됩니다.',
     tags: ['무료강의', '대학강의', '이수증'],
     hasApi: true,
   },
   {
-    id: 'kocw', name: 'KOCW', org: '한국교육학술정보원', group: 'free_study',
+    id: 'kocw', name: 'KOCW', org: '한국교육학술정보원', group: 'free_study', cost: 'free',
     url: 'http://www.kocw.net',
     description: '국내 대학의 공개 강의를 무료로 볼 수 있는 서비스입니다. 전공 과목 예습·복습에 활용할 수 있습니다.',
     tags: ['무료강의', '대학강의', '전공'],
     hasApi: true,
   },
+  {
+    id: 'boostcourse', name: '부스트코스', org: '네이버 커넥트재단', group: 'free_study', cost: 'free',
+    url: 'https://www.boostcourse.org',
+    description: '네이버 커넥트재단이 운영하는 무료 온라인 강의 사이트입니다. 프로그래밍·AI 등 입문 강좌를 제공합니다.',
+    tags: ['무료강의', '프로그래밍', '입문'],
+  },
+  {
+    id: 'opentutorials', name: '생활코딩', org: '생활코딩', group: 'free_study', cost: 'free',
+    url: 'https://opentutorials.org',
+    description: '프로그래밍 입문자를 위한 무료 강의와 문서를 제공하는 사이트입니다.',
+    tags: ['무료강의', '코딩입문'],
+  },
+  {
+    id: 'freecodecamp', name: 'freeCodeCamp', org: 'freeCodeCamp', group: 'free_study', cost: 'free',
+    url: 'https://www.freecodecamp.org',
+    description: '웹 개발·데이터 등을 실습하며 배우는 무료 학습 플랫폼입니다. 영어로 진행됩니다.',
+    tags: ['무료', '웹개발', '영어'],
+  },
+  {
+    id: 'programmers-challenges', name: '프로그래머스 코딩테스트 연습', org: '프로그래머스(그렙)', group: 'free_study', cost: 'free',
+    url: 'https://programmers.co.kr',
+    entries: [{ label: '코딩테스트 연습 문제 목록', url: 'https://school.programmers.co.kr/learn/challenges' }],
+    description: '기업 코딩테스트를 대비해 문제를 풀어볼 수 있는 연습 사이트입니다. 문제마다 개별 주소가 있습니다.',
+    tags: ['코딩테스트', '알고리즘', '취업준비'],
+  },
 
-  // 4. 인턴십·취업
+  // ───────── 4. 인턴십·취업 ─────────
   {
     id: 'linkareer', name: '링커리어', org: '링커리어', group: 'career',
     url: 'https://linkareer.com',
+    entries: [
+      { label: '인턴 공고 보기', url: 'https://linkareer.com/list/intern' },
+      { label: '채용 공고', url: 'https://linkareer.com/list/recruit' },
+      { label: '공모전', url: 'https://linkareer.com/list/contest' },
+      { label: '대외활동', url: 'https://linkareer.com/list/activity' },
+    ],
     description: '대학생을 위한 대외활동·공모전·인턴·신입 공고와 합격 자기소개서를 제공하는 커리어 플랫폼입니다.',
     tags: ['대외활동', '공모전', '인턴', '자소서'],
+    note: '공고 하나하나는 linkareer.com/activity/숫자 형태의 개별 주소를 가집니다.',
   },
   {
     id: 'wanted', name: '원티드', org: '원티드랩', group: 'career',
     url: 'https://www.wanted.co.kr',
+    entries: [{ label: '채용 공고 목록 보기', url: 'https://www.wanted.co.kr/wdlist' }],
+    searchUrl: 'https://www.wanted.co.kr/search?query={q}&tab=position',
     description: 'IT·스타트업 채용 공고가 많은 채용 플랫폼입니다.',
     tags: ['스타트업', 'IT', '채용'],
     hasApi: true,
@@ -79,6 +237,7 @@ export const SITE_LINKS: SiteLink[] = [
   {
     id: 'theteams', name: '더팀스', org: '더팀스', group: 'career',
     url: 'https://www.theteams.kr',
+    entries: [{ label: '인턴 공고 보기', url: 'https://www.theteams.kr/intern' }],
     description: '스타트업 채용 플랫폼으로, 인턴 공고 게시판을 별도로 운영합니다.',
     tags: ['스타트업', '인턴'],
   },
@@ -103,5 +262,87 @@ export const SITE_LINKS: SiteLink[] = [
     tags: ['공공기관', '무역', '인턴'],
     note: 'KOTRA 공고는 공공기관 채용정보(잡알리오) API로 받을 수 있습니다.',
     hasApi: true,
+  },
+  {
+    id: 'worldjob', name: '월드잡플러스', org: '한국산업인력공단', group: 'career',
+    url: 'https://www.worldjob.or.kr',
+    description: '해외취업·해외인턴·해외일경험 정보를 제공하는 한국산업인력공단의 해외취업 지원 사이트입니다.',
+    tags: ['해외취업', '해외인턴', 'K-Move'],
+  },
+  {
+    id: 'jobkorea', name: '잡코리아', org: '잡코리아', group: 'career',
+    url: 'https://www.jobkorea.co.kr',
+    entries: [{ label: '인턴 공고 검색 결과 보기', url: 'https://www.jobkorea.co.kr/Search/?stext=%EC%9D%B8%ED%84%B4' }],
+    searchUrl: 'https://www.jobkorea.co.kr/Search/?stext={q}',
+    description: '국내 대표 종합 채용 플랫폼입니다. 인턴·신입 공고를 검색하고 지원할 수 있습니다.',
+    tags: ['채용', '인턴', '신입'],
+  },
+  {
+    id: 'saramin', name: '사람인', org: '사람인', group: 'career',
+    url: 'https://www.saramin.co.kr',
+    entries: [{ label: '인턴 공고 검색 결과 보기', url: 'https://www.saramin.co.kr/zf_user/search?searchType=search&searchword=%EC%9D%B8%ED%84%B4' }],
+    searchUrl: 'https://www.saramin.co.kr/zf_user/search?searchType=search&searchword={q}',
+    description: '국내 대표 종합 채용 플랫폼입니다. 직무·지역별로 인턴·신입 공고를 찾을 수 있습니다.',
+    tags: ['채용', '인턴', '신입'],
+  },
+  {
+    id: 'incruit', name: '인크루트', org: '인크루트', group: 'career',
+    url: 'https://www.incruit.com',
+    entries: [{ label: '인턴 공고 검색 결과 보기', url: 'https://search.incruit.com/list/search.asp?col=job&kw=%EC%9D%B8%ED%84%B4' }],
+    searchUrl: 'https://search.incruit.com/list/search.asp?col=job&kw={q}',
+    description: '종합 채용 정보 사이트입니다. 공채 일정과 인턴·신입 공고를 확인할 수 있습니다.',
+    tags: ['채용', '공채', '인턴'],
+  },
+  {
+    id: 'catch', name: '캐치', org: '진학사', group: 'career',
+    url: 'https://www.catch.co.kr',
+    description: '대기업·공채 중심의 채용 정보와 기업 분석을 제공하는 채용 플랫폼입니다.',
+    tags: ['대기업', '공채', '채용'],
+  },
+  {
+    id: 'jumpit', name: '점핏', org: '사람인', group: 'career',
+    url: 'https://www.jumpit.co.kr',
+    entries: [{ label: '개발자 포지션 목록 보기', url: 'https://jumpit.saramin.co.kr/positions' }],
+    description: '사람인이 운영하는 개발자 전문 채용 플랫폼입니다. 개발 직군 인턴·신입 포지션을 찾을 수 있습니다.',
+    tags: ['개발자', 'IT', '채용'],
+  },
+  {
+    id: 'rocketpunch', name: '로켓펀치', org: '로켓펀치', group: 'career',
+    url: 'https://www.rocketpunch.com',
+    entries: [{ label: '채용 공고 목록 보기', url: 'https://www.rocketpunch.com/jobs' }],
+    description: '스타트업·벤처 채용 정보와 기업 정보를 제공하는 플랫폼입니다.',
+    tags: ['스타트업', '채용', '인턴'],
+  },
+  {
+    id: 'jobplanet', name: '잡플래닛', org: '잡플래닛', group: 'career',
+    url: 'https://www.jobplanet.co.kr',
+    entries: [{ label: '채용 공고 보기', url: 'https://www.jobplanet.co.kr/job' }],
+    description: '기업 리뷰·연봉 정보와 채용 공고를 함께 볼 수 있는 플랫폼입니다. 지원 전 기업 분위기를 확인할 때 유용합니다.',
+    tags: ['기업리뷰', '연봉', '채용'],
+  },
+  {
+    id: 'remember', name: '리멤버', org: '드라마앤컴퍼니', group: 'career',
+    url: 'https://rememberapp.co.kr',
+    entries: [{ label: '리멤버 커리어 채용 공고 보기', url: 'https://career.rememberapp.co.kr/job/postings' }],
+    description: '명함 앱에서 출발한 커리어 플랫폼으로, 채용 공고와 헤드헌팅 기회를 제공합니다.',
+    tags: ['커리어', '채용'],
+  },
+  {
+    id: 'alio', name: '잡알리오', org: '공공기관 채용정보시스템', group: 'career',
+    url: 'https://job.alio.go.kr',
+    entries: [{ label: '공공기관 채용정보 목록 보기', url: 'https://job.alio.go.kr/recruit.do' }],
+    description: '공공기관의 채용·인턴 공고를 한곳에서 모아 볼 수 있는 정부 운영 시스템입니다.',
+    tags: ['공공기관', '공기업', '인턴'],
+    hasApi: true,
+  },
+  {
+    id: 'campuspick', name: '캠퍼스픽', org: '캠퍼스픽', group: 'career',
+    url: 'https://www.campuspick.com',
+    entries: [
+      { label: '대외활동 보기', url: 'https://www.campuspick.com/activity' },
+      { label: '공모전 보기', url: 'https://www.campuspick.com/contest' },
+    ],
+    description: '대학생을 위한 대외활동·공모전·채용 정보를 모아 보여주는 사이트입니다.',
+    tags: ['대외활동', '공모전', '대학생'],
   },
 ];

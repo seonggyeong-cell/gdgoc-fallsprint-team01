@@ -4,7 +4,7 @@ import { Bookmark, ChevronRight, ExternalLink, Sparkles } from 'lucide-react';
 import { CATEGORY_LABELS, SOURCES } from '@/config/constants';
 import type { NoticeItem } from '@/types';
 import { calculateDDay, formatDeadlineLabel } from '@/utils/dateUtils';
-import { sanitizeUrl } from '@/utils/urlUtils';
+import { resolveNoticeUrl } from '@/utils/urlUtils';
 
 interface NoticeCardProps {
   notice: NoticeItem;
@@ -45,11 +45,10 @@ export const NoticeCard: React.FC<NoticeCardProps> = ({ notice, isBookmarked, on
 
           <button
             onClick={() => onToggleBookmark(notice.id)}
-            className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
-              isBookmarked
-                ? 'bg-amber-50 border-amber-200 text-amber-600'
-                : 'border-neutral-200 text-neutral-400 hover:text-neutral-700 hover:border-neutral-300'
-            }`}
+            className={`p-1.5 rounded-lg border transition-all cursor-pointer ${isBookmarked
+              ? 'bg-amber-50 border-amber-200 text-amber-600'
+              : 'border-neutral-200 text-neutral-400 hover:text-neutral-700 hover:border-neutral-300'
+              }`}
             title={isBookmarked ? '보관함에서 제거' : '보관함에 저장'}
             aria-label={isBookmarked ? '보관함에서 제거' : '보관함에 저장'}
           >
@@ -83,7 +82,7 @@ export const NoticeCard: React.FC<NoticeCardProps> = ({ notice, isBookmarked, on
 
         <div className="flex items-center gap-1">
           <a
-            href={sanitizeUrl(notice.officialUrl)} target="_blank" rel="noreferrer noopener"
+            href={resolveNoticeUrl(notice)} target="_blank" rel="noreferrer noopener"
             className="inline-flex items-center gap-1 text-xs font-medium text-neutral-500 hover:text-indigo-600 py-1 px-2 rounded hover:bg-neutral-100 transition-colors"
             title="원문 사이트 열기"
           >

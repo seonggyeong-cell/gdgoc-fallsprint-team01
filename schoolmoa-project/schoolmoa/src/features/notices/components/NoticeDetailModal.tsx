@@ -4,7 +4,7 @@ import { Bookmark, Calendar, Check, ExternalLink, Share2, Sparkles, X } from 'lu
 import { CAREER_LABELS, CATEGORY_LABELS, SOURCES } from '@/config/constants';
 import type { NoticeItem } from '@/types';
 import { calculateDDay, formatDeadlineLabel, generateIcsCalendar } from '@/utils/dateUtils';
-import { sanitizeUrl } from '@/utils/urlUtils';
+import { resolveNoticeUrl } from '@/utils/urlUtils';
 
 interface Props {
   notice: NoticeItem | null;
@@ -81,11 +81,10 @@ export const NoticeDetailModal: React.FC<Props> = ({ notice, onClose, isBookmark
             </button>
             <button
               onClick={() => onToggleBookmark(notice.id)}
-              className={`flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl border text-xs font-semibold transition-colors cursor-pointer ${
-                isBookmarked
-                  ? 'bg-amber-50 border-amber-300 text-amber-800'
-                  : 'border-neutral-200 text-neutral-700 hover:bg-neutral-50'
-              }`}
+              className={`flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl border text-xs font-semibold transition-colors cursor-pointer ${isBookmarked
+                ? 'bg-amber-50 border-amber-300 text-amber-800'
+                : 'border-neutral-200 text-neutral-700 hover:bg-neutral-50'
+                }`}
             >
               <Bookmark className="w-4 h-4" fill={isBookmarked ? 'currentColor' : 'none'} />
               <span>{isBookmarked ? '보관함에 저장됨' : '보관함에 저장'}</span>
@@ -122,7 +121,7 @@ export const NoticeDetailModal: React.FC<Props> = ({ notice, onClose, isBookmark
             {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Share2 className="w-3.5 h-3.5" />}
             <span>{copied ? '링크 복사됨' : '원문 링크 복사'}</span>
           </button>
-          <a href={sanitizeUrl(notice.officialUrl)} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-1.5 px-4 py-2 font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors shadow-xs">
+          <a href={resolveNoticeUrl(notice)} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-1.5 px-4 py-2 font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors shadow-xs">
             <span>{source.label}에서 자세히 보기·신청</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
