@@ -21,6 +21,7 @@ import { useNotices } from '@/features/notices/hooks/useNotices';
 import type { NoticeItem, TabKey, ViewMode } from '@/types';
 import { calculateDDay } from '@/utils/dateUtils';
 import { hasProfileInfo, recommendNotices } from '@/utils/recommend';
+import { mergeAiOrder, useAiRecommendations } from '@/features/auth/useAiRecommendations';
 
 const LoginPrompt: React.FC<{ message: string; onLogin: () => void }> = ({ message, onLogin }) => (
   <div className="bg-white rounded-xl border border-neutral-200 p-12 text-center text-neutral-500">
@@ -50,7 +51,9 @@ export default function App() {
   // 추천
   const recommendations = useMemo(() => recommendNotices(notices, profile), [notices, profile]);
   const recommendedIds = useMemo(() => (isLoggedIn ? new Set(recommendations.map((r) => r.notice.id)) : null), [recommendations, isLoggedIn]);
-  const reasonMap = useMemo(() => new Map(recommendations.map((r) => [r.notice.id, r.reasons])), [recommendations]);
+  // AI 맞춤 추천: 맞춤 추천 탭을 열었을 때만 요청 (실패하면 규칙 추천 그대로)
+  const aiRec = useAiRecommendations(recommendations, profile, isLoggedIn && hasProfileInfo(profile) && currentTab === 'custom');
+  const shownRecs = useMemo(() => mergeAiOrder(recommendations, aiRec.ai), [recommendations, aiRec.ai]);
 
   const { filters, setFilters, resetFilters, filtered, categoryCounts, availableSubcategories } = useNoticeFilters(notices, recommendedIds);
 
@@ -213,18 +216,32 @@ export default function App() {
             <div className="space-y-6">
               <div className="bg-white rounded-2xl border border-neutral-200 p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="space-y-1">
-                  <h2 className="text-xl font-bold text-neutral-900">{user?.name} 님을 위한 추천 공고 {recommendations.length}건</h2>
+                  <h2 className="text-xl font-bold text-neutral-900">{user?.name} 님을 위한 추천 공고 {shownRecs.length}건</h2>
                   <p className="text-xs text-neutral-600">
                     {profile?.department && `${profile.department} · `}설정한 희망 진로와 관심 분야를 기준으로 고른 공고입니다. 마감된 공고는 제외됩니다.
                   </p>
+                  {aiRec.status === 'loading' && <p className="text-xs text-indigo-600">✦ AI가 더 꼼꼼히 고르는 중입니다…</p>}
+                  {aiRec.status === 'done' && <p className="text-xs text-indigo-600">✦ AI가 고른 추천입니다. 신청 자격은 원문에서 확인하세요.</p>}
+                  {aiRec.status === 'limit' && <p className="text-xs text-neutral-500">오늘 AI 추천 횟수를 모두 사용했습니다. 내일 다시 추천해 드립니다.</p>}
                 </div>
-                <button onClick={() => setProfileOpen(true)} className="px-4 py-2 text-xs font-semibold bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 cursor-pointer shrink-0 self-start md:self-auto">내 정보 수정</button>
+                <div className="flex items-center gap-2 shrink-0 self-start md:self-auto">
+                  {aiRec.status === 'done' && (
+                    <button
+                      onClick={aiRec.refresh}
+                      disabled={aiRec.remaining === 0}
+                      className="px-4 py-2 text-xs font-semibold text-indigo-700 bg-indigo-50 rounded-lg hover:bg-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    >
+                      AI 새로고침{aiRec.remaining != null ? ` (${aiRec.remaining}회 남음)` : ''}
+                    </button>
+                  )}
+                  <button onClick={() => setProfileOpen(true)} className="px-4 py-2 text-xs font-semibold bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 cursor-pointer">내 정보 수정</button>
+                </div>
               </div>
-              {recommendations.length === 0 ? (
+              {shownRecs.length === 0 ? (
                 <p className="text-sm text-neutral-500">조건에 맞는 공고가 아직 없습니다. 진로·관심 분야를 더 추가해 보세요.</p>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {recommendations.map((r) => <NoticeCard key={r.notice.id} {...cardProps(r.notice)} reasons={reasonMap.get(r.notice.id)} />)}
+                  {shownRecs.map((r) => <NoticeCard key={r.notice.id} {...cardProps(r.notice)} reasons={r.reasons} />)}
                 </div>
               )}
             </div>
