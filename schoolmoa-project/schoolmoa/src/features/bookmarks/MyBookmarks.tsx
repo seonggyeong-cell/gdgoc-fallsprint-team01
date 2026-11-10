@@ -1,17 +1,6 @@
 // [담당: 역할 C] 내 보관함: 지원 단계 관리 + 메모
 import React, { useState } from 'react';
-import {
-  Bookmark,
-  Trash2,
-  ExternalLink,
-  ChevronRight,
-  Sparkles,
-  CheckCircle2,
-  Calendar,
-  Edit3,
-  Clock,
-  Check,
-} from 'lucide-react';
+import { Bookmark, Trash2, Sparkles, Edit3 } from 'lucide-react';
 import { STAGES } from '@/config/constants';
 import type { ApplicationStage, BookmarkRecord, NoticeItem } from '@/types';
 import { calculateDDay, formatDeadlineLabel } from '@/utils/dateUtils';
@@ -164,11 +153,10 @@ export const MyBookmarks: React.FC<MyBookmarksProps> = ({
                           <button
                             key={st.key}
                             onClick={() => onUpdateRecord(notice.id, st.key, rec.memo)}
-                            className={`px-2.5 py-1 text-[11px] rounded font-medium transition-colors cursor-pointer ${
-                              rec.stage === st.key
-                                ? `${st.color} font-bold shadow-xs`
-                                : 'text-neutral-500 hover:text-neutral-900'
-                            }`}
+                            className={`px-2.5 py-1 text-[11px] rounded font-medium transition-colors cursor-pointer ${rec.stage === st.key
+                              ? `${st.color} font-bold shadow-xs`
+                              : 'text-neutral-500 hover:text-neutral-900'
+                              }`}
                           >
                             {st.label}
                           </button>

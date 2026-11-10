@@ -4,9 +4,19 @@ import { DEFAULT_FILTERS } from '@/config/constants';
 import type { FilterState, NoticeItem } from '@/types';
 import { calculateDDay } from '@/utils/dateUtils';
 
+/** 마감 임박순 (마감된 공고·상시모집은 뒤로) */
+function compareByDeadline(a: NoticeItem, b: NoticeItem): number {
+  const dA = calculateDDay(a.deadline, a.isOngoing);
+  const dB = calculateDDay(b.deadline, b.isOngoing);
+  if (dA.diffDays < 0 !== dB.diffDays < 0) return dA.diffDays < 0 ? 1 : -1; // 마감된 공고는 뒤로
+  if (!!a.isOngoing !== !!b.isOngoing) return a.isOngoing ? 1 : -1; // 상시모집은 진행중 공고 뒤로
+  return dA.diffDays - dB.diffDays;
+}
+
 /**
  * recommendedIds: 로그인 상태에서 '맞춤 추천만 보기'에 쓸 공고 id 집합 (비로그인이면 null)
- * scoreMap: 프로필 기반 추천 점수 맵 — 기본 정렬(마감일순)에서 같은 마감일 내 점수 높은 공고를 위로
+ * scoreMap: 프로필 기반 추천 점수(공고 id → 점수). '맞춤 추천순' 정렬에 사용합니다.
+ *           (로그인하지 않았거나 프로필이 비어 있으면 마감일순으로 자동 대체)
  */
 export function useNoticeFilters(
   notices: NoticeItem[],
@@ -15,6 +25,7 @@ export function useNoticeFilters(
 ) {
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
   const resetFilters = useCallback(() => setFilters(DEFAULT_FILTERS), []);
+  const hasScores = !!scoreMap && scoreMap.size > 0;
 
   // 마감 포함 여부만 반영한 기본 목록 (카테고리 개수 계산용)
   const visible = useMemo(
@@ -55,22 +66,27 @@ export function useNoticeFilters(
       })
       .sort((a, b) => {
         switch (filters.sortBy) {
+          case 'recommended': {
+            if (!hasScores) return compareByDeadline(a, b);
+            const closedA = calculateDDay(a.deadline, a.isOngoing).diffDays < 0;
+            const closedB = calculateDDay(b.deadline, b.isOngoing).diffDays < 0;
+            if (closedA !== closedB) return closedA ? 1 : -1; // 마감된 공고는 항상 뒤로
+            const sA = scoreMap?.get(a.id) ?? 0;
+            const sB = scoreMap?.get(b.id) ?? 0;
+            if (sA !== sB) return sB - sA; // 점수 높은 공고가 위로
+            return compareByDeadline(a, b); // 점수가 같으면 마감 임박순
+          }
           case 'latest':
             return (b.createdAt ?? '').localeCompare(a.createdAt ?? '');
           case 'popular':
             return b.views + b.bookmarkedCount * 5 - (a.views + a.bookmarkedCount * 5);
           case 'benefit':
             return (b.estimatedValueNumber ?? 0) - (a.estimatedValueNumber ?? 0);
-          default: {
-            const dA = calculateDDay(a.deadline, a.isOngoing);
-            const dB = calculateDDay(b.deadline, b.isOngoing);
-            if (dA.diffDays < 0 !== dB.diffDays < 0) return dA.diffDays < 0 ? 1 : -1; // 마감된 공고는 뒤로
-            if (!!a.isOngoing !== !!b.isOngoing) return a.isOngoing ? 1 : -1;       // 상시모집은 진행중 공고 뒤로
-            return dA.diffDays - dB.diffDays;
-          }
+          default:
+            return compareByDeadline(a, b);
         }
       });
-  }, [visible, filters, recommendedIds]);
+  }, [visible, filters, recommendedIds, scoreMap, hasScores]);
 
   return {
     filters,

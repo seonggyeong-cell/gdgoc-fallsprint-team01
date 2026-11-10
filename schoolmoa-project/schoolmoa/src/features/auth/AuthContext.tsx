@@ -5,7 +5,6 @@ import { supabase } from '@/services/supabase';
 import type { AuthProvider, AuthUser, UserProfile } from '@/types';
 import {
   completeNaverLogin,
-  createDemoUser,
   loginWith,
   loginWithEmail,
   loginWithGoogle,

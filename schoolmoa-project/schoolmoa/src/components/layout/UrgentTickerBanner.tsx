@@ -1,6 +1,6 @@
 // [담당: 역할 D] 마감 임박 배너
 import React from 'react';
-import { AlertCircle, ChevronRight, X } from 'lucide-react';
+import { ChevronRight, X } from 'lucide-react';
 import type { NoticeItem } from '@/types';
 import { calculateDDay } from '@/utils/dateUtils';
 
