@@ -128,3 +128,4 @@ alter table public.ai_usage             enable row level security;
 -- ── 6) 설정 확인 (실행 후 결과로 테이블·정책 목록이 보임) ────────────────────
 select tablename, rowsecurity from pg_tables where schemaname = 'public' order by 1;
 select tablename, policyname, cmd from pg_policies where schemaname = 'public' order by 1, 2;
+
