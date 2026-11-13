@@ -13,6 +13,7 @@ import {
   signInDemo,
   startNaverLogin,
   toAuthUser,
+  withdrawAccount, // 1. 방금 만든 탈퇴 함수 불러오기
 } from './authService';
 
 const EMPTY_PROFILE: UserProfile = {
@@ -36,6 +37,7 @@ interface AuthContextValue {
   loginEmail: (email: string, password: string) => Promise<void>;
   registerEmail: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
+  withdraw: () => Promise<void>; // 2. 탈퇴 기능 타입 추가
   saveProfile: (p: UserProfile) => void;
 }
 
@@ -127,6 +129,7 @@ export const AuthProviderRoot: React.FC<{ children: React.ReactNode }> = ({ chil
     }
 
     loadProfile();
+
     return () => {
       isCancelled = true;
     };
@@ -140,7 +143,6 @@ export const AuthProviderRoot: React.FC<{ children: React.ReactNode }> = ({ chil
           await loginWith(provider);
           return;
         }
-
         if (provider === 'google') {
           completeLogin(await loginWithGoogle());
         } else if (provider === 'naver') {
@@ -189,6 +191,32 @@ export const AuthProviderRoot: React.FC<{ children: React.ReactNode }> = ({ chil
     removeKey(STORAGE_KEYS.authUser);
     setUser(null);
   }, []);
+
+  // 3. 실제 회원탈퇴 처리 함수 추가
+  const withdraw = useCallback(async () => {
+    if (!user) return;
+    const userId = user.id;
+
+    // Supabase DB의 profiles 테이블에서 내 프로필 데이터 삭제
+    if (ENV.supabaseUrl && ENV.supabaseKey) {
+      try {
+        await supabase.from('profiles').delete().eq('id', userId);
+      } catch (e) {
+        console.warn('Supabase profile delete error', e);
+      }
+    }
+
+    // authService의 탈퇴 함수 호출 (계정 삭제 및 세션 종료)
+    await withdrawAccount(userId);
+
+    // 브라우저 로컬스토리지에 남은 유저 정보 및 프로필 삭제
+    removeKey(STORAGE_KEYS.profile(userId));
+    removeKey(STORAGE_KEYS.authUser);
+
+    // 화면 상태를 로그아웃(비로그인) 상태로 즉시 초기화
+    setUser(null);
+    setProfile(null);
+  }, [user]);
 
   const saveProfile = useCallback(
     async (p: UserProfile) => {
@@ -240,9 +268,10 @@ export const AuthProviderRoot: React.FC<{ children: React.ReactNode }> = ({ chil
       loginEmail,
       registerEmail,
       logout,
+      withdraw, // 4. 외부에서 꺼내 쓸 수 있도록 내보내기
       saveProfile,
     }),
-    [user, profile, isLoginOpen, authError, requireLogin, login, loginEmail, registerEmail, logout, saveProfile]
+    [user, profile, isLoginOpen, authError, requireLogin, login, loginEmail, registerEmail, logout, withdraw, saveProfile]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
