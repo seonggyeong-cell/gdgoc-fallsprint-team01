@@ -35,8 +35,7 @@ const LoginPrompt: React.FC<{ message: string; onLogin: () => void }> = ({ messa
 
 export default function App() {
   const auth = useAuth();
-  const { user, profile, isLoggedIn, needsOnboarding, requireLogin, openLogin, logout, saveProfile } = auth;
-
+  const { user, profile, isLoggedIn, needsOnboarding, requireLogin, openLogin, logout, withdraw, saveProfile } = auth;
   const { notices, addNotice } = useNotices(user?.id);
   const { bookmarkIds, records, isBookmarked, toggleBookmark, updateRecord } = useBookmarks(user?.id ?? null);
 
@@ -292,7 +291,18 @@ export default function App() {
         onToggleBookmark={handleToggleBookmark}
       />
       {isNewNoticeOpen && <NewNoticeModal onSubmitNotice={(n) => { addNotice(n); setSelectedNotice(n); }} onClose={() => setNewNoticeOpen(false)} />}
-      {isProfileOpen && profile && <ProfileModal profile={profile} isOnboarding={needsOnboarding} onSave={saveProfile} onClose={closeProfile} />}
+      {isProfileOpen && profile && (
+        <ProfileModal
+          profile={profile}
+          isOnboarding={needsOnboarding}
+          onSave={saveProfile}
+          onClose={closeProfile}
+          onWithdraw={async () => {
+            await withdraw();
+            setProfileOpen(false);
+          }}
+        />
+      )}
       <LoginModal />
     </div>
   );

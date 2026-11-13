@@ -310,3 +310,25 @@ export const createDemoUser = (): AuthUser => ({
   provider: 'demo',
   name: '체험 사용자',
 });
+// ───────── 회원 탈퇴 (Supabase 및 로컬 데이터 삭제) ─────────
+export async function withdrawAccount(userId: string): Promise<void> {
+  // 1. Supabase 연결 환경일 경우
+  if (ENV.supabaseUrl && ENV.supabaseKey) {
+    try {
+      // Supabase DB에 delete_user RPC 함수가 만들어져 있다면 호출하여 계정 영구 삭제
+      const { error } = await supabase.rpc('delete_user');
+      if (error) {
+        console.warn('Supabase RPC delete_user 안내 (로그아웃으로 대체 진행):', error.message);
+      }
+    } catch (e) {
+      console.warn('Supabase 계정 삭제 요청 중 오류:', e);
+    }
+    // 세션 완전히 종료 (로그아웃)
+    await logoutWithSupabase();
+  }
+
+  // 2. 로컬 가입 유저 목록(Fallback)에서도 해당 유저 삭제
+  const users = readJSON<RegisteredUser[]>(REGISTERED_USERS_KEY, []);
+  const filtered = users.filter((u) => u.id !== userId);
+  writeJSON(REGISTERED_USERS_KEY, filtered);
+}
